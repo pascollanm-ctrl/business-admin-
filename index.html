@@ -131,7 +131,7 @@
             <form id="login-form">
                 <div class="mb-4">
                     <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email Address</label>
-                    <input type="email" id="email" name="email" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-150" placeholder="admin@pascocreation.com">
+                    <input type="email" id="email" name="email" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-150" placeholder="pascollanm@gmail.com">
                 </div>
                 
                 <div class="mb-6">
@@ -291,13 +291,19 @@
         </div>
     </div>
     <script type="text/javascript">
+        // ----------------------------------------------------------------------
         // --- 1. CONFIGURATION & INITIALIZATION ---
-        // !!! GOOGLE APPS SCRIPT API URL FOR DATA COMMUNICATION - UPDATED !!!
+        // ----------------------------------------------------------------------
+        // !!! GOOGLE APPS SCRIPT API URL (Your latest URL) !!!
         const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbwBJheYkpzSv0rCxm60k3-Q5GMbWKkwybwi2LPvgJRNE5TWtOpqrL76e_ykeVY-_lzfew/exec'; 
 
-        let userId = 'google-sheet-user'; // Mock user ID since we skip Firebase Auth
-        let chartInstance = null;
+        // !!! HARDCODED ADMIN CREDENTIALS (FRONTEND ONLY) !!!
+        const JS_ADMIN_EMAIL = 'pascollanm@gmail.com';
+        // !!! PASSWORD !!! 
+        const JS_ADMIN_PASSWORD = 'Pasco@5861'; 
+        
         let allBusinesses = []; 
+        let chartInstance = null;
 
         // --- DOM Elements ---
         const loginView = document.getElementById('login-view');
@@ -369,7 +375,9 @@
             }
         }
         
-        // --- 4. DATA COMMUNICATION & VIEW MANAGEMENT (UPDATED FOR GOOGLE SHEETS) ---
+        // ----------------------------------------------------------------------
+        // --- 4. DATA COMMUNICATION & VIEW MANAGEMENT ---
+        // ----------------------------------------------------------------------
         function showLoading(message = "Connecting...") { 
             loadingMessage.textContent = message;
             loadingOverlay.classList.remove('hidden');
@@ -381,39 +389,53 @@
                 loginView.classList.add('hidden');
                 dashboardView.classList.remove('hidden');
                 fetchBusinesses(); // Start fetching data
+                localStorage.setItem('isAuthenticated', 'true');
             } else {
                 loginView.classList.remove('hidden');
                 dashboardView.classList.add('hidden');
+                localStorage.removeItem('isAuthenticated');
             }
             hideLoading();
         }
         
-        // --- Simplified Auth State / Mock Auth ---
+        // --- INITIAL AUTH CHECK ---
         window.addEventListener('load', () => {
-            showLoading("Initializing Dashboard...");
-            // Simulate a successful initial load and switch to dashboard
-            setTimeout(() => {
-                 switchView(true);
-            }, 500);
+            const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+            if (isAuthenticated) {
+                 showLoading("Loading Dashboard...");
+                 // Give a moment for the loading screen to show
+                 setTimeout(() => switchView(true), 500); 
+            } else {
+                // If not authenticated, show login immediately
+                switchView(false);
+            }
         });
 
-        // 4.1 Login Handler (Now just simulates success)
+        // 4.1 Login Handler (Hardcoded Check)
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             showLoading("Logging in...");
             loginError.classList.add('hidden');
             
-            // --- MOCK LOGIN SUCCESS ---
-            setTimeout(() => {
-                switchView(true);
-                showCustomAlert('Login Successful!', 'success');
-            }, 1000);
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+
+            if (email === JS_ADMIN_EMAIL && password === JS_ADMIN_PASSWORD) {
+                setTimeout(() => {
+                    switchView(true);
+                    showCustomAlert('Login Successful!', 'success');
+                }, 1000);
+            } else {
+                hideLoading();
+                loginError.textContent = 'Invalid email or password.';
+                loginError.classList.remove('hidden');
+                showCustomAlert('Login Failed!', 'error');
+            }
         });
 
         // 4.2 Logout Handler (in menu)
         logoutButton.addEventListener('click', async () => {
             userMenuDropdown.classList.add('hidden'); 
-            // --- MOCK LOGOUT ---
             showLoading("Logging out...");
             setTimeout(() => {
                 allBusinesses = [];
@@ -424,7 +446,7 @@
             }, 1000);
         });
 
-        // --- GOOGLE SHEET API CALLS (CORE UPDATE) ---
+        // --- GOOGLE SHEET API CALLS (CORE) ---
 
         /**
          * Fetches all business data from the Google Apps Script (GAS) API.
@@ -485,7 +507,9 @@
             }
         }
         
-        // --- 5. DATA PROCESSING & RENDERING ---
+        // ----------------------------------------------------------------------
+        // --- 5. DATA PROCESSING & RENDERING (UNCHANGED) ---
+        // ----------------------------------------------------------------------
         
         function processAndRenderData(businesses) {
             businesses = businesses.map(business => ({
@@ -522,7 +546,7 @@
             }
         }
 
-        // --- SUMMARY CARD & CHART UPDATE (KEPT LOGIC) ---
+        // --- SUMMARY CARD & CHART UPDATE (UNCHANGED) ---
         function updateSummary(businesses) {
             const activeCount = businesses.filter(b => b.Status === 'Active').length;
             const expiringCount = businesses.filter(b => b.Status === 'Expiring Soon').length;
@@ -606,7 +630,7 @@
             }
         }
 
-        // --- TABLE RENDERING ---
+        // --- TABLE RENDERING (UNCHANGED) ---
         function renderBusinesses(businessesToDisplay) {
             businessesTableBody.innerHTML = '';
             
@@ -676,7 +700,7 @@
             `;
         }
         
-        // --- FILTERING AND SEARCH ---
+        // --- FILTERING AND SEARCH (UNCHANGED) ---
         const searchInput = document.getElementById('search-input');
         const statusFilter = document.getElementById('status-filter');
 
@@ -705,7 +729,7 @@
             renderBusinesses(filteredBusinesses);
         }
 
-        // --- MODAL AND FORM LOGIC (UPDATED SAVE FUNCTION) ---
+        // --- MODAL AND FORM LOGIC (UNCHANGED) ---
 
         // Attach event listener to the Add Business button
         document.getElementById('add-business-btn').addEventListener('click', () => {
@@ -802,7 +826,7 @@
             businessIdToDelete = null;
         });
 
-        // --- CUSTOM ALERT ---
+        // --- CUSTOM ALERT (UNCHANGED) ---
         function showCustomAlert(message, type = 'info') {
             const container = document.getElementById('custom-alert-container');
             const alert = document.createElement('div');
@@ -835,7 +859,7 @@
             }, 3000);
         }
         
-        // --- MENU TOGGLE ---
+        // --- MENU TOGGLE (UNCHANGED) ---
         menuButton.addEventListener('click', () => {
             const isExpanded = userMenuDropdown.classList.contains('hidden');
             if (isExpanded) {
