@@ -224,7 +224,7 @@
 
         // --- FIREBASE AND API SETUP ---
         
-        // IMPORTANT: This URL has been updated with your deployment link.
+        // IMPORTANT: This URL is set to your deployment link.
         const SHEETS_API_URL = "https://script.google.com/macros/s/AKfycbwVZ_5GCA68OtJQzrKeKquzo_DQ8QiBi1C12yY92BM7yNVf4dLGqbzEdMv2ApFjUMlFVw/exec"; 
 
         // Firebase Setup (for user authentication and security rules)
@@ -254,10 +254,8 @@
          */
         async function initFirebase() {
             try {
-                // Check if the user updated the API URL
                 if (SHEETS_API_URL === "YOUR_APPS_SCRIPT_DEPLOYMENT_URL_HERE") {
                      showToast("Setup Required", "Please update SHEETS_API_URL in index.html with your deployed Apps Script URL.", "error", 10000);
-                     // Stop here if the URL is not set, as data loading will fail.
                      return;
                 }
 
@@ -270,7 +268,6 @@
                     const userCredential = await signInWithCustomToken(auth, initialAuthToken);
                     userId = userCredential.user.uid;
                 } else {
-                    // This is the fallback that causes the "Running as guest" message
                     const userCredential = await signInAnonymously(auth);
                     userId = userCredential.user.uid;
                 }
@@ -284,10 +281,8 @@
             } catch (error) {
                 console.error("Firebase Initialization or Auth Failed:", error);
                 showToast("Auth Failed", "Could not sign in securely. Running as guest.", "error");
-                // Attempt to load businesses anyway, in case the only failure was auth.
-                if (SHEETS_API_URL !== "YOUR_APPS_SCRIPT_DEPLOYMENT_URL_HERE") {
-                    await loadBusinesses();
-                }
+                // Attempt to load businesses anyway
+                await loadBusinesses();
             }
         }
 
@@ -296,12 +291,11 @@
         /**
          * Securely makes requests to the deployed Google Apps Script API.
          * Implements exponential backoff for resilience.
-         * @param {string} action - The action to perform (e.g., 'read', 'add', 'update').
+         * @param {string} action - The action to perform (e.g., 'read', 'add', 'update', 'updateStatus').
          * @param {object} [data={}] - Payload for POST requests.
-         * @param {string} [method='POST'] - HTTP method. Sheets API uses POST for all data ops.
          * @returns {Promise<object>} - The parsed JSON response from the Apps Script.
          */
-        async function fetchSheetData(action, data = {}, method = 'POST') {
+        async function fetchSheetData(action, data = {}) {
             const url = `${SHEETS_API_URL}?action=${action}`;
             const maxRetries = 3;
             
@@ -310,7 +304,7 @@
                     const payload = { ...data, userId }; // Always include userId for admin check
                     
                     const response = await fetch(url, {
-                        method: method,
+                        method: 'POST',
                         headers: { 'Content-Type': 'text/plain' }, // Must use text/plain for Apps Script to parse JSON payload
                         body: JSON.stringify(payload)
                     });
@@ -349,7 +343,7 @@
         async function loadBusinesses() {
             try {
                 showToast("Loading Data", "Fetching business records...", "info", 1500);
-                const result = await fetchSheetData('read', {}, 'POST'); // Use POST to read as it's more reliable with Apps Script permissions
+                const result = await fetchSheetData('read'); 
                 
                 allBusinesses = result.data.map(processBusinessStatus);
                 filterBusinesses();
@@ -526,9 +520,11 @@
                     'Suspended': 'suspended-status',
                 }[business.computedStatus] || 'text-gray-500 bg-gray-100';
 
+                // --- ACTIVATION / DEACTIVATION BUTTON LOGIC ---
                 const actionButton = business.computedStatus !== 'Suspended' 
                     ? `<button onclick="updateStatusClick(${business.rowIndex}, 'Suspended', '${business.name}')" class="text-red-500 hover:text-red-700 transition duration-150 p-1" title="Suspend"><i data-lucide="shield-off" class="w-5 h-5"></i></button>`
                     : `<button onclick="updateStatusClick(${business.rowIndex}, 'Active', '${business.name}')" class="text-green-500 hover:text-green-700 transition duration-150 p-1" title="Reactivate"><i data-lucide="rotate-ccw" class="w-5 h-5"></i></button>`;
+                // ---------------------------------------------
 
                 return `
                     <tr class="hover:bg-gray-50 transition duration-150">
@@ -746,16 +742,20 @@
 
         /**
          * Handles the click event to change a business status (Suspend/Reactivate).
+         * This function is the key to instant status change.
          */
         window.updateStatusClick = async function(rowIndex, newStatus, name) {
             const verb = newStatus === 'Suspended' ? 'Suspending' : 'Reactivating';
             showToast("Processing", `${verb} business '${name}'...`, "info", 3000);
 
             try {
-                // Note: The Apps Script updates the 'Status' column directly.
+                // 1. Send command to Apps Script to update the 'Status' column in the Sheet
                 await fetchSheetData('updateStatus', { rowIndex, status: newStatus }); 
+                
+                // 2. Display success and immediately reload ALL data from the Sheet
                 showToast("Success", `Business '${name}' is now ${newStatus}.`, "success");
-                await loadBusinesses(); // Reload data
+                await loadBusinesses(); // THIS FORCES THE INSTANT RELOAD from the Sheet
+
             } catch (error) {
                 console.error(`Error updating status for ${name}:`, error);
                 showToast("Status Update Failed", error.message, "error");
@@ -834,7 +834,7 @@
         window.filterBusinesses = filterBusinesses;
         window.sortTable = sortTable;
         window.changePage = changePage;
-
+        window.updateStatusClick = updateStatusClick; // Ensure this is explicitly exposed
     </script>
 </body>
 </html>
