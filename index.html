@@ -224,7 +224,7 @@
 
         // --- FIREBASE AND API SETUP ---
         
-        // The Web App URL for the deployed Google Apps Script.
+        // IMPORTANT: This URL has been updated with your deployment link.
         const SHEETS_API_URL = "https://script.google.com/macros/s/AKfycbwVZ_5GCA68OtJQzrKeKquzo_DQ8QiBi1C12yY92BM7yNVf4dLGqbzEdMv2ApFjUMlFVw/exec"; 
 
         // Firebase Setup (for user authentication and security rules)
@@ -254,24 +254,29 @@
          */
         async function initFirebase() {
             try {
-                // If the SHEETS_API_URL is the default placeholder, show a setup warning
-                if (SHEETS_API_URL.includes("AKfycbwVZ_5GCA68OtJQzrKeKquzo_DQ8QiBi1C12yY92BM7yNVf4dLGqbzEdMv2ApFjUMlFVw")) {
-                     // Note: Since the user provided this exact URL, we skip the setup warning but keep the check logic structure.
+                // Check if the user updated the API URL
+                if (SHEETS_API_URL === "YOUR_APPS_SCRIPT_DEPLOYMENT_URL_HERE") {
+                     showToast("Setup Required", "Please update SHEETS_API_URL in index.html with your deployed Apps Script URL.", "error", 10000);
+                     // Stop here if the URL is not set, as data loading will fail.
+                     return;
                 }
 
                 const app = initializeApp(firebaseConfig);
                 auth = getAuth(app);
                 db = getFirestore(app);
 
+                // --- Firebase Auth (The "Running as Guest" logic) ---
                 if (initialAuthToken) {
                     const userCredential = await signInWithCustomToken(auth, initialAuthToken);
                     userId = userCredential.user.uid;
                 } else {
+                    // This is the fallback that causes the "Running as guest" message
                     const userCredential = await signInAnonymously(auth);
                     userId = userCredential.user.uid;
                 }
                 
                 document.getElementById('user-id').textContent = userId;
+                // ---------------------------------------------------
                 
                 // Once authenticated, load data
                 await loadBusinesses();
@@ -279,6 +284,10 @@
             } catch (error) {
                 console.error("Firebase Initialization or Auth Failed:", error);
                 showToast("Auth Failed", "Could not sign in securely. Running as guest.", "error");
+                // Attempt to load businesses anyway, in case the only failure was auth.
+                if (SHEETS_API_URL !== "YOUR_APPS_SCRIPT_DEPLOYMENT_URL_HERE") {
+                    await loadBusinesses();
+                }
             }
         }
 
