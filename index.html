@@ -1,15 +1,11 @@
 <!DOCTYPE html>
-<!-- Set initial theme from localStorage or system preference -->
 <html lang="en" class=""> 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pasco Creation – Business Automation Dashboard</title>
-    <!-- Load Tailwind CSS (Utility-First Styling) -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Load Chart.js for the dashboard summary chart -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
-    <!-- Load Lucide Icons for aesthetic UI elements -->
     <script type="module" src="https://unpkg.com/lucide@latest"></script>
     <style>
         /* Custom styles for better readability and a modern feel */
@@ -31,7 +27,6 @@
         .table-row-orange { background-color: #fef3c7; } /* Expiring Soon */
         .table-row-red { background-color: #fee2e2; } /* Expired */
         .table-row-gray { background-color: #e5e7eb; } /* Suspended */
-
         /* --- Dark Theme Styles --- */
         .dark body {
             background-color: #111827; /* Gray-900 */
@@ -68,20 +63,16 @@
             border-color: #4b5563;
         }
         .dark input::placeholder { color: #9ca3af; }
-
         /* Custom scrollbar */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
         ::-webkit-scrollbar-track { background: #f3f4f6; }
         .dark ::-webkit-scrollbar-track { background: #1f2937; }
         .dark ::-webkit-scrollbar-thumb { background: var(--primary-dark); }
-
-
         /* Ensure smooth view transition */
         .view {
             transition: opacity 0.3s ease-in-out;
         }
-
         /* Responsive table cell styling for mobile */
         @media (max-width: 768px) {
             .table-cell-mobile-label::before {
@@ -121,8 +112,6 @@
     </style>
 </head>
 <body class="min-h-screen">
-
-    <!-- Global Loading Overlay -->
     <div id="loading-overlay" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-[100] transition-opacity duration-300 hidden">
         <div class="flex flex-col items-center">
             <svg class="animate-spin h-10 w-10 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -132,8 +121,6 @@
             <span id="loading-message" class="mt-3 text-white text-lg">Connecting to Firebase...</span>
         </div>
     </div>
-
-    <!-- 1. Login View -->
     <div id="login-view" class="view hidden min-h-screen flex items-center justify-center p-4">
         <div class="w-full max-w-md bg-white dark:bg-gray-800 p-8 rounded-xl container-shadow">
             <h1 class="text-3xl font-bold text-center text-gray-800 dark:text-gray-50 mb-6 flex items-center justify-center">
@@ -141,7 +128,6 @@
                 Pasco Creation Login
             </h1>
             <p class="text-center text-gray-500 dark:text-gray-400 mb-8">Access the Business Automation Dashboard</p>
-
             <form id="login-form">
                 <div class="mb-4">
                     <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email Address</label>
@@ -160,37 +146,28 @@
                         </button>
                     </div>
                 </div>
-
                 <div id="login-error" class="text-red-500 text-sm mb-4 hidden p-3 bg-red-100 rounded-lg"></div>
-
                 <button type="submit" class="w-full bg-blue-500 text-white py-3 rounded-lg font-semibold hover:bg-blue-600 transition duration-200 focus:outline-none focus:ring-4 focus:ring-blue-300">
                     Login to Dashboard
                 </button>
             </form>
         </div>
     </div>
-
-    <!-- 2. Dashboard View -->
     <div id="dashboard-view" class="view hidden min-h-screen">
-        <!-- Navbar -->
         <nav class="bg-white dark:bg-gray-800 container-shadow p-4 flex justify-between items-center sticky top-0 z-30">
             <h1 class="text-xl md:text-2xl font-bold text-gray-800 dark:text-gray-50 flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 text-blue-500 mr-2 hidden sm:block"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z"/><path d="M18.8 8c.2-.7.4-1.4.4-2s-.2-1.4-.4-2M5.2 8c-.2-.7-.4-1.4-.4-2s.2-1.4.4-2"/><path d="M14.5 17.5l-3-3"/><path d="M10.5 17.5l3-3"/><path d="M8.5 12h7"/></svg>
                 Pasco Creation – Business Automation Dashboard
             </h1>
             
-            <!-- START: New 3-Dot Menu -->
             <div class="relative">
                 <button id="menu-button" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition duration-150" aria-expanded="false" aria-haspopup="true">
-                    <!-- Three Dots Icon (Kebab Menu) -->
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600 dark:text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
                 </button>
                 
-                <!-- Dropdown Menu Content -->
                 <div id="user-menu-dropdown" class="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5 hidden origin-top-right focus:outline-none z-20">
                     <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="menu-button">
                         <button id="theme-toggle" class="w-full text-left flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 hover:text-gray-900 transition" role="menuitem">
-                            <!-- Icon will be set by JS -->
                             <svg id="theme-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg>
                             <span id="theme-text">Change Theme</span>
                         </button>
@@ -201,21 +178,13 @@
                     </div>
                 </div>
             </div>
-            <!-- END: New 3-Dot Menu -->
-        </nav>
-
+            </nav>
         <main class="p-4 md:p-8">
             <div class="space-y-8">
-
-                <!-- Summary Cards -->
                 <div id="summary-cards" class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                    <!-- Card placeholders -->
-                </div>
-
-                <!-- Controls: Search, Filter, Add Button -->
+                    </div>
                 <div class="flex flex-col md:flex-row gap-4 justify-between items-stretch">
                     <input type="text" id="search-input" placeholder="Search by Business Name..." class="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-150">
-
                     <select id="status-filter" class="w-full md:w-auto px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-150">
                         <option value="All">Filter by Status: All</option>
                         <option value="Active">Active</option>
@@ -223,14 +192,11 @@
                         <option value="Expiring Soon">Expiring Soon</option>
                         <option value="Expired">Expired</option>
                     </select>
-
                     <button id="add-business-btn" class="bg-green-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-600 transition duration-200 focus:outline-none focus:ring-4 focus:ring-green-300 flex items-center justify-center">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1"><line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/></svg>
                         Add Business
                     </button>
                 </div>
-
-                <!-- Business Table -->
                 <div class="bg-white dark:bg-gray-800 rounded-xl container-shadow overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-600 table-fixed table-responsive">
                         <thead class="bg-gray-50 dark:bg-gray-700">
@@ -244,13 +210,10 @@
                             </tr>
                         </thead>
                         <tbody id="businesses-table-body" class="divide-y divide-gray-200 dark:divide-gray-600">
-                            <!-- Business rows will be inserted here by JavaScript -->
-                        </tbody>
+                            </tbody>
                     </table>
                     <p id="no-businesses" class="text-center text-gray-500 dark:text-gray-400 p-8 hidden">No businesses found matching the current criteria.</p>
                 </div>
-
-                <!-- Chart Section -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div class="md:col-span-2 bg-white dark:bg-gray-800 p-6 rounded-xl container-shadow">
                         <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-50 mb-4">Business Status Overview</h2>
@@ -260,12 +223,9 @@
                     </div>
                     <div class="hidden md:block"></div>
                 </div>
-
             </div>
         </main>
     </div>
-
-    <!-- Add/Edit Business Modal -->
     <div id="business-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden z-40 items-center justify-center p-4" onclick="closeModal(event)">
         <div class="bg-white dark:bg-gray-800 rounded-xl w-full max-w-lg container-shadow" onclick="event.stopPropagation()">
             <div class="p-6 border-b border-gray-200 dark:border-gray-600 flex justify-between items-center">
@@ -305,7 +265,6 @@
                         <option value="Suspended">Suspended</option>
                     </select>
                 </div>
-
                 <button type="submit" id="modal-submit-btn" class="w-full bg-blue-500 text-white py-2 rounded-lg font-semibold hover:bg-blue-600 transition duration-200">
                     Save Business
                 </button>
@@ -313,19 +272,14 @@
         </div>
     </div>
     
-    <!-- Custom Alert Message container -->
     <div id="custom-alert-container" class="fixed top-5 right-5 z-[100] w-full max-w-sm"></div>
-
-    <!-- NEW: Confirm Delete Modal -->
     <div id="confirm-delete-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden z-50 items-center justify-center p-4" onclick="closeModal(event, 'confirm-delete-modal')">
         <div class="bg-white dark:bg-gray-800 rounded-xl w-full max-w-sm container-shadow" onclick="event.stopPropagation()">
             <div class="p-6 text-center">
-                <!-- Warning Icon -->
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-red-500 mx-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
                 <h3 class="text-2xl font-semibold text-gray-800 dark:text-gray-50 mt-4">Delete Business?</h3>
                 <p class="text-gray-600 dark:text-gray-400 mt-2">Are you sure you want to delete this business? This action cannot be undone.</p>
             </div>
-            <!-- Modal Action Buttons -->
             <div class="grid grid-cols-2 gap-4 p-6 bg-gray-50 dark:bg-gray-700 rounded-b-xl">
                 <button id="confirm-delete-cancel" class="w-full bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 py-2 rounded-lg font-semibold hover:bg-gray-300 dark:hover:bg-gray-500 transition">
                     Cancel
@@ -336,57 +290,14 @@
             </div>
         </div>
     </div>
-    <!-- END: Confirm Delete Modal -->
-
-
-    <script type="module">
-        // Import Firebase modules using the modular SDK v10+
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import {
-            getAuth,
-            signInAnonymously,
-            signInWithCustomToken,
-            onAuthStateChanged,
-            signInWithEmailAndPassword,
-            signOut,
-            setPersistence,
-            browserSessionPersistence
-        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import {
-            getFirestore,
-            collection,
-            onSnapshot,
-            doc,
-            addDoc,
-            updateDoc,
-            query,
-            setLogLevel,
-            deleteDoc // <-- ADDED deleteDoc
-        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
+    <script type="text/javascript">
         // --- 1. CONFIGURATION & INITIALIZATION ---
+        // !!! GOOGLE APPS SCRIPT API URL FOR DATA COMMUNICATION !!!
+        const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbwBJheYkpzSv0rCxm60k3-Q5GMbWKkwybwi2LPvgJRNE5TWkO8qrL76e_ykeVY-_lzfew/exec'; 
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyAt497gd6OZs_LkKrEAlYA5_XKJFi4YjE4",
-            authDomain: "admin-businesses.firebaseapp.com",
-            projectId: "admin-businesses",
-            storageBucket: "admin-businesses.firebasestorage.app",
-            messagingSenderId: "819488792573",
-            appId: "1:819488792573:web:aa35d80e6d1787cd104394",
-            measurementId: "G-NCDGZZ2VVD"
-        };
-        
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-        let userId = null;
+        let userId = 'google-sheet-user'; // Mock user ID since we skip Firebase Auth
         let chartInstance = null;
         let allBusinesses = []; 
-
-        setLogLevel('debug');
 
         // --- DOM Elements ---
         const loginView = document.getElementById('login-view');
@@ -395,32 +306,32 @@
         const loadingMessage = document.getElementById('loading-message');
         const loginForm = document.getElementById('login-form');
         const loginError = document.getElementById('login-error');
+        const businessesTableBody = document.getElementById('businesses-table-body');
+        const noBusinessesMessage = document.getElementById('no-businesses');
         
-        // --- NEW Menu & Theme Elements ---
+        // --- Menu & Theme Elements ---
         const menuButton = document.getElementById('menu-button');
         const userMenuDropdown = document.getElementById('user-menu-dropdown');
         const themeToggleBtn = document.getElementById('theme-toggle');
         const themeIcon = document.getElementById('theme-icon');
         const themeText = document.getElementById('theme-text');
-        const logoutButton = document.getElementById('logout-button'); // This is the button *inside* the menu
+        const logoutButton = document.getElementById('logout-button'); 
         
-        // --- NEW Confirm Delete Modal Elements ---
+        // --- Confirm Delete Modal Elements ---
         const confirmDeleteModal = document.getElementById('confirm-delete-modal');
         const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
         const confirmDeleteCancelBtn = document.getElementById('confirm-delete-cancel');
         
-        
+        const businessModal = document.getElementById('business-modal');
+        const businessForm = document.getElementById('business-form');
+        const modalTitle = document.getElementById('modal-title');
+        const modalSubmitBtn = document.getElementById('modal-submit-btn');
+
         // Icons for Theme Toggle
         const sunIcon = `<path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707M17.657 6.343l.707-.707M6.343 17.657l-.707.707M8 12a4 4 0 1 1 8 0 4 4 0 0 1-8 0z"/>`;
         const moonIcon = `<path d="M12 3a6 6 0 0 0 9 6 6 6 0 0 1-9-6Z"/><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707M17.657 6.343l.707-.707M6.343 17.657l-.707.707"/>`;
-
-
-        // --- 2. THEME MANAGEMENT ---
-
-        /**
-         * Applies the theme ('light' or 'dark') to the <html> element.
-         * @param {string} theme - The theme to apply.
-         */
+        
+        // --- 2. THEME MANAGEMENT (UNCHANGED) ---
         function applyTheme(theme) {
             if (theme === 'dark') {
                 document.documentElement.classList.add('dark');
@@ -431,55 +342,34 @@
                 themeIcon.innerHTML = moonIcon;
                 themeText.textContent = 'Dark Mode';
             }
-            localStorage.setItem('theme', theme); // Save preference
+            localStorage.setItem('theme', theme); 
         }
-
-        /**
-         * Toggles the theme between light and dark.
-         */
         function toggleTheme() {
             const currentTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
             applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
-            userMenuDropdown.classList.add('hidden'); // Close menu after selection
+            userMenuDropdown.classList.add('hidden'); 
         }
-
-        /**
-         * Initializes the theme from localStorage or system preference.
-         */
         function initializeTheme() {
             const savedTheme = localStorage.getItem('theme');
             const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             applyTheme(savedTheme || (prefersDark ? 'dark' : 'light'));
         }
-        
-        // Initialize theme on script load
         initializeTheme();
 
-
-        // --- 3. PASSWORD VISIBILITY TOGGLE ---
+        // --- 3. PASSWORD VISIBILITY TOGGLE (UNCHANGED) ---
         window.showPasswordToggle = function() {
             const passwordInput = document.getElementById('password');
             const toggleIcon = document.getElementById('toggle-icon-eye');
-
             if (passwordInput.type === 'password') {
                 passwordInput.type = 'text';
-                toggleIcon.innerHTML = `
-                    <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/>
-                    <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/>
-                    <path d="M6 12c.57-1.78 2.5-4.88 5-6.36"/>
-                    <path d="M16.17 16.17a2 2 0 0 1-2.26 1.76"/>
-                    <path d="M2 2l20 20"/>`;
+                toggleIcon.innerHTML = `<path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6 12c.57-1.78 2.5-4.88 5-6.36"/><path d="M16.17 16.17a2 2 0 0 1-2.26 1.76"/><path d="M2 2l20 20"/>`;
             } else {
                 passwordInput.type = 'password';
-                toggleIcon.innerHTML = `
-                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
-                    <circle cx="12" cy="12" r="3"/>`;
+                toggleIcon.innerHTML = `<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>`;
             }
         }
-
-
-        // --- 4. AUTHENTICATION & VIEW MANAGEMENT ---
-
+        
+        // --- 4. DATA COMMUNICATION & VIEW MANAGEMENT (UPDATED FOR GOOGLE SHEETS) ---
         function showLoading(message = "Connecting...") { 
             loadingMessage.textContent = message;
             loadingOverlay.classList.remove('hidden');
@@ -490,514 +380,479 @@
             if (isAuthenticated) {
                 loginView.classList.add('hidden');
                 dashboardView.classList.remove('hidden');
-                if (userId) {
-                    setupFirestoreListener();
-                } else {
-                    console.error("User ID not available after authentication.");
-                }
+                fetchBusinesses(); // Start fetching data
             } else {
                 loginView.classList.remove('hidden');
                 dashboardView.classList.add('hidden');
             }
             hideLoading();
         }
+        
+        // --- Simplified Auth State / Mock Auth ---
+        window.addEventListener('load', () => {
+            showLoading("Initializing Dashboard...");
+            // Simulate a successful initial load and switch to dashboard
+            setTimeout(() => {
+                 switchView(true);
+            }, 500);
+        });
 
-        // 4.1 Initial Authentication Setup
-        showLoading("Connecting to Firebase...");
-        setPersistence(auth, browserSessionPersistence)
-            .then(() => {
-                if (initialAuthToken) {
-                    console.log("Attempting sign-in with custom token...");
-                    return signInWithCustomToken(auth, initialAuthToken);
-                } else {
-                    console.log("No custom token, falling back to anonymous sign-in...");
-                    return signInAnonymously(auth);
-                }
-            })
-            .catch((error) => {
-                console.error("Initial sign-in failed, falling back to anonymous:", error);
-                return signInAnonymously(auth);
-            });
-
-        // 4.2 Auth State Listener
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                userId = user.uid;
-                console.log("User authenticated:", userId);
+        // 4.1 Login Handler (Now just simulates success)
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            showLoading("Logging in...");
+            loginError.classList.add('hidden');
+            
+            // --- MOCK LOGIN SUCCESS ---
+            setTimeout(() => {
                 switchView(true);
-            } else {
-                userId = null;
-                console.log("User logged out or not authenticated.");
+                showCustomAlert('Login Successful!', 'success');
+            }, 1000);
+        });
+
+        // 4.2 Logout Handler (in menu)
+        logoutButton.addEventListener('click', async () => {
+            userMenuDropdown.classList.add('hidden'); 
+            // --- MOCK LOGOUT ---
+            showLoading("Logging out...");
+            setTimeout(() => {
                 allBusinesses = [];
                 renderBusinesses(allBusinesses);
                 updateSummary(allBusinesses);
                 switchView(false);
-            }
+                showCustomAlert('Logged out successfully.', 'info');
+            }, 1000);
         });
 
-        // 4.3 Login Handler
-        loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+        // --- GOOGLE SHEET API CALLS (CORE UPDATE) ---
 
-            showLoading("Logging in...");
-            loginError.classList.add('hidden');
-
+        /**
+         * Fetches all business data from the Google Apps Script (GAS) API.
+         */
+        async function fetchBusinesses() {
+            showLoading("Fetching business data from Google Sheet...");
             try {
-                await signInWithEmailAndPassword(auth, email, password);
-                // onAuthStateChanged handles the view switch
+                const response = await fetch(GAS_API_URL);
+                const result = await response.json();
+
+                if (result.success) {
+                    allBusinesses = result.data.map(business => ({
+                        ...business,
+                        id: business.id ? business.id.toString() : null 
+                    }));
+                    processAndRenderData(allBusinesses);
+                } else {
+                    console.error("Failed to fetch data:", result.error);
+                    showCustomAlert(`Error fetching data: ${result.error}`, 'error');
+                }
             } catch (error) {
-                console.error("Login failed:", error);
-                loginError.textContent = `Login failed: ${error.message.replace('Firebase: Error (auth/', '').replace(').', '')}`;
-                loginError.classList.remove('hidden');
+                console.error("Network or API error:", error);
+                showCustomAlert(`A network error occurred while fetching data.`, 'error');
+            } finally {
                 hideLoading();
             }
-        });
-
-        // 4.4 Logout Handler (in menu)
-        logoutButton.addEventListener('click', async () => {
-            userMenuDropdown.classList.add('hidden'); // Close menu
-            showLoading("Logging out...");
+        }
+        
+        /**
+         * Sends a POST request to the GAS API to add/update/delete data.
+         */
+        async function manageBusinessInSheet(action, data, id) {
+            showLoading(`${action.charAt(0).toUpperCase() + action.slice(1)} business...`);
             try {
-                await signOut(auth);
-                // onAuthStateChanged handles the view switch
+                const response = await fetch(GAS_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action, data, id })
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    showCustomAlert(`Business ${action}ed successfully!`, 'success');
+                    // Re-fetch all data to ensure the dashboard is in sync
+                    fetchBusinesses(); 
+                    return true;
+                } else {
+                    console.error(`Failed to ${action} business:`, result.error);
+                    showCustomAlert(`Error: ${result.error}`, 'error');
+                    return false;
+                }
             } catch (error) {
-                console.error("Logout failed:", error);
+                console.error("Network or API error:", error);
+                showCustomAlert(`A network error occurred during ${action}.`, 'error');
+                return false;
+            } finally {
                 hideLoading();
             }
-        });
+        }
         
-        // 4.5 Menu Toggle Listeners
-        menuButton.addEventListener('click', (e) => {
-            e.stopPropagation(); // Prevent click from bubbling to document
-            userMenuDropdown.classList.toggle('hidden');
-        });
-
-        themeToggleBtn.addEventListener('click', toggleTheme);
+        // --- 5. DATA PROCESSING & RENDERING ---
         
-        // Close menu if clicking outside of it
-        document.addEventListener('click', (e) => {
-            if (!menuButton.contains(e.target) && !userMenuDropdown.contains(e.target)) {
-                userMenuDropdown.classList.add('hidden');
+        function processAndRenderData(businesses) {
+            businesses = businesses.map(business => ({
+                ...business,
+                Status: calculateStatus(business.EndDate, business.Status)
+            }));
+            
+            allBusinesses = businesses;
+            updateSummary(allBusinesses);
+            // Apply current filters/search before rendering
+            applyFiltersAndSearch(); 
+            updateChart(allBusinesses);
+        }
+        
+        function calculateStatus(endDateStr, currentStatus) {
+            if (currentStatus === 'Suspended') {
+                return 'Suspended';
             }
-        });
 
-
-        // --- 5. FIRESTORE UTILITIES & REAL-TIME DATA ---
-
-        const BUSINESSES_COLLECTION_PATH = `artifacts/${appId}/public/data/businesses`;
-        const BUSINESSES_COLLECTION = collection(db, BUSINESSES_COLLECTION_PATH);
-        const businessTableBody = document.getElementById('businesses-table-body');
-        const noBusinessesMessage = document.getElementById('no-businesses');
-
-        function getBusinessStatus(business) {
             const today = new Date();
-            today.setHours(0, 0, 0, 0);
+            today.setHours(0, 0, 0, 0); 
             
-            // Handle both Firestore Timestamps (object) and Date objects (from form)
-            const endDate = business.endDate.toDate ? business.endDate.toDate() : new Date(business.endDate);
-            endDate.setHours(0, 0, 0, 0);
+            const endDate = new Date(endDateStr + 'T00:00:00');
             
-            const diffTime = endDate.getTime() - today.getTime();
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            const oneDay = 24 * 60 * 60 * 1000; 
+            const diffDays = Math.round((endDate.getTime() - today.getTime()) / oneDay);
 
-            let status = business.status;
-            let colorClass = 'table-row-green';
-            let icon = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-500 dark:text-green-400 mr-1"><polyline points="20 6 9 17 4 12"/></svg>';
-
-            if (business.status === 'Suspended') {
-                status = 'Suspended';
-                colorClass = 'table-row-gray'; 
-                icon = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500 dark:text-gray-400 mr-1"><circle cx="12" cy="12" r="10"/><line x1="15" x2="9" y1="9" y2="15"/><line x1="9" x2="15" y1="9" y2="15"/></svg>';
-            } else if (diffDays < 0) {
-                status = 'Expired';
-                colorClass = 'table-row-red';
-                icon = '❌';
-            } else if (diffDays <= 3) {
-                status = 'Expiring Soon';
-                colorClass = 'table-row-orange';
-                icon = '⚠️';
+            if (diffDays < 0) {
+                return 'Expired';
+            } else if (diffDays <= 30) { 
+                return 'Expiring Soon';
             } else {
-                status = 'Active';
-                colorClass = 'table-row-green';
+                return 'Active';
             }
-
-            return { status, colorClass, icon };
         }
 
-        function renderBusinesses(businesses) {
-            const searchTerm = document.getElementById('search-input').value.toLowerCase();
-            const filterStatus = document.getElementById('status-filter').value;
-            let filteredBusinesses = [...businesses];
+        // --- SUMMARY CARD & CHART UPDATE (KEPT LOGIC) ---
+        function updateSummary(businesses) {
+            const activeCount = businesses.filter(b => b.Status === 'Active').length;
+            const expiringCount = businesses.filter(b => b.Status === 'Expiring Soon').length;
+            const expiredCount = businesses.filter(b => b.Status === 'Expired').length;
+            const suspendedCount = businesses.filter(b => b.Status === 'Suspended').length;
+            const totalCount = businesses.length;
+            
+            const cards = [
+                { title: "Total Businesses", value: totalCount, icon: "package", color: "blue" },
+                { title: "Active Contracts", value: activeCount, icon: "check-circle", color: "green" },
+                { title: "Expiring Soon", value: expiringCount, icon: "alert-triangle", color: "amber" },
+                { title: "Expired/Suspended", value: expiredCount + suspendedCount, icon: "x-octagon", color: "red" }
+            ];
 
+            const summaryCardsDiv = document.getElementById('summary-cards');
+            summaryCardsDiv.innerHTML = cards.map(card => `
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-xl container-shadow flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">${card.title}</p>
+                        <p class="text-3xl font-bold text-gray-900 dark:text-gray-50 mt-1">${card.value}</p>
+                    </div>
+                    <div class="p-3 rounded-full bg-${card.color}-100 dark:bg-${card.color}-900/50 text-${card.color}-600 dark:text-${card.color}-400">
+                        <svg class="w-6 h-6" data-lucide="${card.icon}"></svg>
+                    </div>
+                </div>
+            `).join('');
+            // Re-render lucide icons after updating HTML
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+        }
+
+        function updateChart(businesses) {
+            const statusCounts = {
+                'Active': businesses.filter(b => b.Status === 'Active').length,
+                'Expiring Soon': businesses.filter(b => b.Status === 'Expiring Soon').length,
+                'Expired': businesses.filter(b => b.Status === 'Expired').length,
+                'Suspended': businesses.filter(b => b.Status === 'Suspended').length,
+            };
+
+            const labels = Object.keys(statusCounts);
+            const data = Object.values(statusCounts);
+            const backgroundColors = [
+                'rgb(59, 130, 246)',  // Blue (Active)
+                'rgb(245, 158, 11)',  // Amber (Expiring Soon)
+                'rgb(239, 68, 68)',   // Red (Expired)
+                'rgb(107, 114, 128)'  // Gray (Suspended)
+            ];
+
+            const ctx = document.getElementById('status-chart');
+
+            if (chartInstance) {
+                chartInstance.data.labels = labels;
+                chartInstance.data.datasets[0].data = data;
+                chartInstance.data.datasets[0].backgroundColor = backgroundColors;
+                chartInstance.update();
+            } else {
+                chartInstance = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: data,
+                            backgroundColor: backgroundColors,
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                                labels: {
+                                    color: document.documentElement.classList.contains('dark') ? '#d1d5db' : '#374151'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // --- TABLE RENDERING ---
+        function renderBusinesses(businessesToDisplay) {
+            businessesTableBody.innerHTML = '';
+            
+            if (businessesToDisplay.length === 0) {
+                noBusinessesMessage.classList.remove('hidden');
+                return;
+            }
+            noBusinessesMessage.classList.add('hidden');
+            
+            businessesToDisplay.forEach(business => {
+                businessesTableBody.innerHTML += createBusinessRow(business);
+            });
+
+            // Re-render lucide icons for actions
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+        }
+
+        function createBusinessRow(business) {
+            let rowClass;
+            let statusBadge;
+
+            switch (business.Status) {
+                case 'Active':
+                    rowClass = 'table-row-green';
+                    statusBadge = `<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100">Active</span>`;
+                    break;
+                case 'Expiring Soon':
+                    rowClass = 'table-row-orange';
+                    statusBadge = `<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-amber-100 text-amber-800 dark:bg-amber-800 dark:text-amber-100">Expiring Soon</span>`;
+                    break;
+                case 'Expired':
+                    rowClass = 'table-row-red';
+                    statusBadge = `<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100">Expired</span>`;
+                    break;
+                case 'Suspended':
+                    rowClass = 'table-row-gray';
+                    statusBadge = `<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">Suspended</span>`;
+                    break;
+                default:
+                    rowClass = '';
+                    statusBadge = `<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">${business.Status}</span>`;
+            }
+
+            return `
+                <tr class="${rowClass} hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-150">
+                    <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-50 table-cell-mobile-label" data-label="Business Name">${business.BusinessName}</td>
+                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300 table-cell-mobile-label" data-label="Owner">${business.Owner}</td>
+                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300 table-cell-mobile-label" data-label="Contact">${business.Contact}</td>
+                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300 table-cell-mobile-label" data-label="Dates">
+                        <div class="text-xs">Start: ${business.StartDate}</div>
+                        <div class="text-xs font-semibold">End: ${business.EndDate}</div>
+                    </td>
+                    <td class="px-4 py-4 whitespace-nowrap table-cell-mobile-label" data-label="Status">${statusBadge}</td>
+                    <td class="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <div class="flex items-center justify-center space-x-2">
+                            <button onclick="handleEditClick('${business.id}')" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 transition duration-150 p-1 rounded-full hover:bg-blue-50 dark:hover:bg-gray-700" title="Edit">
+                                <svg class="w-5 h-5" data-lucide="pencil"></svg>
+                            </button>
+                            <button onclick="handleDeleteClick('${business.id}')" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 transition duration-150 p-1 rounded-full hover:bg-red-50 dark:hover:bg-gray-700" title="Delete">
+                                <svg class="w-5 h-5" data-lucide="trash-2"></svg>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
+        
+        // --- FILTERING AND SEARCH ---
+        const searchInput = document.getElementById('search-input');
+        const statusFilter = document.getElementById('status-filter');
+
+        searchInput.addEventListener('input', applyFiltersAndSearch);
+        statusFilter.addEventListener('change', applyFiltersAndSearch);
+
+        function applyFiltersAndSearch() {
+            let filteredBusinesses = allBusinesses;
+            const searchTerm = searchInput.value.toLowerCase();
+            const selectedStatus = statusFilter.value;
+
+            // 1. Apply Search Filter
             if (searchTerm) {
                 filteredBusinesses = filteredBusinesses.filter(b =>
-                    b.businessName.toLowerCase().includes(searchTerm)
+                    b.BusinessName.toLowerCase().includes(searchTerm) ||
+                    b.Owner.toLowerCase().includes(searchTerm) ||
+                    b.Contact.toLowerCase().includes(searchTerm)
                 );
             }
 
-            if (filterStatus !== 'All') {
-                filteredBusinesses = filteredBusinesses.filter(b => {
-                    const { status } = getBusinessStatus(b);
-                    if (filterStatus === 'Active') {
-                        return status === 'Active' || status === 'Expiring Soon';
-                    }
-                    return filterStatus === status;
-                });
+            // 2. Apply Status Filter
+            if (selectedStatus !== 'All') {
+                filteredBusinesses = filteredBusinesses.filter(b => b.Status === selectedStatus);
             }
 
-            businessTableBody.innerHTML = '';
-
-            if (filteredBusinesses.length === 0) {
-                noBusinessesMessage.classList.remove('hidden');
-            } else {
-                noBusinessesMessage.classList.add('hidden');
-            }
-
-            filteredBusinesses.forEach(business => {
-                const { status, colorClass, icon } = getBusinessStatus(business);
-
-                const startDate = business.startDate.toDate ? business.startDate.toDate().toLocaleDateString() : new Date(business.startDate).toLocaleDateString();
-                const endDate = business.endDate.toDate ? business.endDate.toDate().toLocaleDateString() : new Date(business.endDate).toLocaleDateString();
-
-                const row = document.createElement('tr');
-                row.className = `${colorClass} hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-150`;
-                row.innerHTML = `
-                    <td data-label="Business Name" class="table-cell-mobile-label px-4 py-3 font-medium text-gray-900 dark:text-gray-50">${business.businessName}</td>
-                    <td data-label="Owner" class="table-cell-mobile-label px-4 py-3 text-gray-700 dark:text-gray-300">${business.owner}</td>
-                    <td data-label="Contact" class="table-cell-mobile-label px-4 py-3 text-gray-700 dark:text-gray-300">${business.contact}</td>
-                    <td data-label="Dates" class="table-cell-mobile-label px-4 py-3 text-gray-700 dark:text-gray-300 text-sm">
-                        <span class="font-semibold">Start:</span> ${startDate}<br>
-                        <span class="font-semibold">End:</span> ${endDate}
-                    </td>
-                    <td data-label="Status" class="table-cell-mobile-label px-4 py-3 text-gray-700 dark:text-gray-200 font-semibold flex items-center">
-                        ${icon}
-                        ${status}
-                    </td>
-                    <td data-label="Actions" class="table-cell-mobile-label px-4 py-3 text-center space-y-2 md:space-y-0 md:space-x-2">
-                        <button onclick="editBusiness('${business.id}')" class="text-blue-500 hover:text-blue-700 font-medium text-sm px-2">Edit</button>
-                        ${status !== 'Suspended' ?
-                            `<button onclick="updateBusinessStatus('${business.id}', 'Suspended')" class="bg-yellow-500 text-white px-3 py-1 rounded-lg text-xs hover:bg-yellow-600 transition">Suspend</button>` :
-                            `<button onclick="updateBusinessStatus('${business.id}', 'Active')" class="bg-green-500 text-white px-3 py-1 rounded-lg text-xs hover:bg-green-600 transition">Reactivate</button>`
-                        }
-                        <!-- NEW DELETE BUTTON -->
-                        <button onclick="showConfirmDelete('${business.id}')" class="text-red-500 hover:text-red-700 font-medium text-sm px-2">Delete</button>
-                    </td>
-                `;
-                businessTableBody.appendChild(row);
-            });
+            renderBusinesses(filteredBusinesses);
         }
 
-        document.getElementById('search-input').addEventListener('input', () => renderBusinesses(allBusinesses));
-        document.getElementById('status-filter').addEventListener('change', () => renderBusinesses(allBusinesses));
+        // --- MODAL AND FORM LOGIC (UPDATED SAVE FUNCTION) ---
 
-        function setupFirestoreListener() {
-            const businessesQuery = query(BUSINESSES_COLLECTION);
+        // Attach event listener to the Add Business button
+        document.getElementById('add-business-btn').addEventListener('click', () => {
+            showModal('add');
+        });
 
-            onSnapshot(businessesQuery, (snapshot) => {
-                const updatedBusinesses = [];
-                snapshot.forEach(doc => {
-                    const data = doc.data();
-                    if (data.startDate && data.endDate) {
-                        updatedBusinesses.push({ id: doc.id, ...data });
-                    } else {
-                        console.warn(`Skipping business ${doc.id}: Missing date fields.`);
-                    }
-                });
+        function showModal(mode, business = {}) { 
+            document.getElementById('business-id').value = business.id || '';
+            document.getElementById('business-name').value = business.BusinessName || '';
+            document.getElementById('owner').value = business.Owner || '';
+            document.getElementById('contact').value = business.Contact || '';
+            document.getElementById('start-date').value = business.StartDate || ''; 
+            document.getElementById('end-date').value = business.EndDate || '';
+            document.getElementById('status').value = business.Status || 'Active';
+            
+            modalTitle.textContent = mode === 'add' ? 'Add New Business' : 'Edit Business';
+            modalSubmitBtn.textContent = mode === 'add' ? 'Save Business' : 'Update Business';
 
-                updatedBusinesses.sort((a, b) => a.businessName.localeCompare(b.businessName));
-
-                allBusinesses = updatedBusinesses;
-                renderBusinesses(allBusinesses);
-                updateSummary(allBusinesses);
-            }, (error) => {
-                console.error("Firestore real-time update failed: ", error);
-                alertMessage('Failed to load business data.', 'error');
-            });
+            businessModal.classList.remove('hidden');
+            businessModal.classList.add('flex');
         }
 
-        function updateSummary(businesses) {
-            const counts = { total: 0, active: 0, suspended: 0, expired: 0, expiringSoon: 0 };
-
-            businesses.forEach(business => {
-                counts.total++;
-                const { status } = getBusinessStatus(business);
-
-                if (status === 'Active') counts.active++;
-                else if (status === 'Suspended') counts.suspended++;
-                else if (status === 'Expired') counts.expired++;
-                else if (status === 'Expiring Soon') counts.expiringSoon++;
-            });
-
-            const summaryHtml = `
-                <div class="bg-white dark:bg-gray-800 p-6 rounded-xl container-shadow border-t-4 border-blue-500">
-                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Businesses</p>
-                    <p class="text-3xl font-bold text-gray-900 dark:text-gray-50 mt-1">${counts.total}</p>
-                </div>
-                <div class="bg-white dark:bg-gray-800 p-6 rounded-xl container-shadow border-t-4 border-green-500">
-                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Active</p>
-                    <p class="text-3xl font-bold text-gray-900 dark:text-gray-50 mt-1">${counts.active + counts.expiringSoon}</p>
-                </div>
-                <div class="bg-white dark:bg-gray-800 p-6 rounded-xl container-shadow border-t-4 border-yellow-500">
-                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Suspended / Expiring</p>
-                    <p class="text-3xl font-bold text-gray-900 dark:text-gray-50 mt-1">${counts.suspended + counts.expiringSoon}</p>
-                </div>
-                <div class="bg-white dark:bg-gray-800 p-6 rounded-xl container-shadow border-t-4 border-red-500">
-                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Expired</p>
-                    <p class="text-3xl font-bold text-gray-900 dark:text-gray-50 mt-1">${counts.expired}</p>
-                </div>
-            `;
-            document.getElementById('summary-cards').innerHTML = summaryHtml;
-
-            const chartData = {
-                labels: ['Active', 'Suspended', 'Expired', 'Expiring Soon'],
-                datasets: [{
-                    data: [counts.active, counts.suspended, counts.expired, counts.expiringSoon],
-                    backgroundColor: ['#10b981', '#6b7280', '#ef4444', '#f59e0b'],
-                    hoverOffset: 8
-                }]
-            };
-
-            const chartConfig = {
-                type: 'doughnut',
-                data: chartData,
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                            labels: {
-                                font: { size: 14 },
-                                // Set color dynamically based on theme
-                                color: document.documentElement.classList.contains('dark') ? '#e5e7eb' : '#374151'
-                            }
-                        },
-                        title: { display: false }
-                    }
+        window.hideModal = function() { 
+            businessModal.classList.add('hidden');
+            businessModal.classList.remove('flex');
+            businessForm.reset();
+        }
+        
+        window.closeModal = function(event, modalId = 'business-modal') { 
+            if (event.target.id === modalId) {
+                if (modalId === 'business-modal') {
+                    hideModal();
+                } else if (modalId === 'confirm-delete-modal') {
+                    confirmDeleteModal.classList.add('hidden');
                 }
+            }
+        }
+
+        // --- Form Submission Handler (Calls GAS API) ---
+        businessForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('business-id').value;
+            const mode = id ? 'update' : 'add';
+
+            const data = {
+                BusinessName: document.getElementById('business-name').value,
+                Owner: document.getElementById('owner').value,
+                Contact: document.getElementById('contact').value,
+                StartDate: document.getElementById('start-date').value,
+                EndDate: document.getElementById('end-date').value,
+                Status: document.getElementById('status').value 
             };
 
-            if (chartInstance) {
-                // Update chart labels color for theme changes
-                chartInstance.options.plugins.legend.labels.color = document.documentElement.classList.contains('dark') ? '#e5e7eb' : '#374151';
-                chartInstance.data = chartData;
-                chartInstance.update();
-            } else {
-                const ctx = document.getElementById('status-chart').getContext('2d');
-                chartInstance = new Chart(ctx, chartConfig);
+            let result = false;
+            if (mode === 'add') {
+                result = await manageBusinessInSheet('add', data);
+            } else { // update
+                result = await manageBusinessInSheet('update', data, id);
             }
-        }
 
-
-        // --- 6. CRUD OPERATIONS (MODAL) ---
-
-        const businessModal = document.getElementById('business-modal');
-        const businessForm = document.getElementById('business-form');
-        const modalTitle = document.getElementById('modal-title');
-        const modalSubmitBtn = document.getElementById('modal-submit-btn');
-
-        // --- UPDATED Modal Functions to handle multiple modals ---
-        function showModal(modalId, isEdit = false) {
-            const modal = document.getElementById(modalId);
-            if (!modal) return;
-            
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            document.body.style.overflow = 'hidden'; 
-            
-            if (modalId === 'business-modal' && !isEdit) {
-                modalTitle.textContent = 'Add New Business';
-                modalSubmitBtn.textContent = 'Save Business';
-                businessForm.reset();
-                document.getElementById('business-id').value = '';
+            if (result) {
+                hideModal();
             }
-        }
+        });
 
-        function hideModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if (!modal) return;
-            
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-            document.body.style.overflow = '';
-        }
-
-        window.closeModal = (event, modalId) => {
-            const modal = document.getElementById(modalId);
-            if (event.target === modal) {
-                hideModal(modalId);
-            }
-        };
-
-        document.getElementById('add-business-btn').addEventListener('click', () => showModal('business-modal', false));
-
-        window.editBusiness = (id) => {
+        // --- Action Handlers ---
+        window.handleEditClick = function(id) { 
             const business = allBusinesses.find(b => b.id === id);
-            if (!business) {
-                console.error("Business not found for ID:", id);
-                alertMessage("Error: Business data not found.", 'error');
-                return;
+            if (business) {
+                showModal('edit', business);
             }
+        }
 
-            modalTitle.textContent = `Edit Business: ${business.businessName}`;
-            modalSubmitBtn.textContent = 'Update Business';
+        let businessIdToDelete = null; 
 
-            document.getElementById('business-id').value = id;
-            document.getElementById('business-name').value = business.businessName;
-            document.getElementById('owner').value = business.owner;
-            document.getElementById('contact').value = business.contact;
-            document.getElementById('status').value = business.status;
-
-            const formatDate = (timestamp) => {
-                const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-                return date.toISOString().split('T')[0];
-            };
-            document.getElementById('start-date').value = formatDate(business.startDate);
-            document.getElementById('end-date').value = formatDate(business.endDate);
-
-            showModal('business-modal', true);
-        };
-
-        // --- NEW: Delete Business Functions ---
-        window.showConfirmDelete = (id) => {
-            // Store the ID on the confirm button to retrieve later
-            confirmDeleteBtn.dataset.id = id;
-            showModal('confirm-delete-modal');
-        };
+        window.handleDeleteClick = function(id) { 
+            businessIdToDelete = id;
+            confirmDeleteModal.classList.remove('hidden');
+            confirmDeleteModal.classList.add('flex');
+        }
         
         confirmDeleteCancelBtn.addEventListener('click', () => {
-            hideModal('confirm-delete-modal');
+            confirmDeleteModal.classList.add('hidden');
+            businessIdToDelete = null;
         });
 
         confirmDeleteBtn.addEventListener('click', async () => {
-            const id = confirmDeleteBtn.dataset.id;
-            if (!id) return;
-
-            hideModal('confirm-delete-modal');
-            showLoading("Deleting business...");
-
-            try {
-                const businessRef = doc(BUSINESSES_COLLECTION, id);
-                await deleteDoc(businessRef);
-                alertMessage('Business deleted successfully.', 'success');
-            } catch (error) {
-                console.error("Error deleting business: ", error);
-                alertMessage(`Failed to delete business: ${error.message}`, 'error');
+            if (businessIdToDelete) {
+                const result = await manageBusinessInSheet('delete', {}, businessIdToDelete);
+                if (result) {
+                    confirmDeleteModal.classList.add('hidden');
+                }
             }
-            hideLoading();
+            businessIdToDelete = null;
         });
-        // --- End of New Delete Functions ---
 
-        businessForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            showLoading("Saving...");
-
-            const id = document.getElementById('business-id').value;
-            const name = document.getElementById('business-name').value;
-            const owner = document.getElementById('owner').value;
-            const contact = document.getElementById('contact').value;
-            const status = document.getElementById('status').value;
+        // --- CUSTOM ALERT ---
+        function showCustomAlert(message, type = 'info') {
+            const container = document.getElementById('custom-alert-container');
+            const alert = document.createElement('div');
             
-            const startDate = new Date(document.getElementById('start-date').value);
-            const endDate = new Date(document.getElementById('end-date').value);
-
-            if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
-                alertMessage('Validation Error: Please ensure both Start Date and End Date are valid.', 'error');
-                hideLoading();
-                return;
-            }
-            if (endDate < startDate) {
-                alertMessage('Validation Error: End Date cannot be before Start Date.', 'error');
-                hideLoading();
-                return;
-            }
-            if (!userId) {
-                alertMessage("Authentication Error: You must be logged in to save data.", 'error');
-                hideLoading();
-                return; 
-            }
-
-            const businessData = {
-                businessName: name,
-                owner: owner,
-                contact: contact,
-                status: status,
-                startDate: startDate,
-                endDate: endDate,
+            const typeClasses = {
+                'success': 'bg-green-500',
+                'error': 'bg-red-500',
+                'info': 'bg-blue-500'
             };
 
-            console.log("--- DEBUG SAVE ATTEMPT ---");
-            console.log("UserID:", userId);
-            console.log("Collection Path:", BUSINESSES_COLLECTION_PATH);
-            console.log("Business Data Payload:", businessData);
+            alert.className = `p-4 rounded-lg text-white shadow-lg mb-3 flex items-center ${typeClasses[type]} opacity-0 transition-opacity duration-300`;
+            alert.innerHTML = `
+                <svg class="w-6 h-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    ${type === 'success' ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />' : ''}
+                    ${type === 'error' ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />' : ''}
+                    ${type === 'info' ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />' : ''}
+                </svg>
+                <span>${message}</span>
+            `;
             
-            try {
-                if (id) {
-                    await updateDoc(doc(BUSINESSES_COLLECTION, id), businessData);
-                    alertMessage('Business updated successfully!', 'success');
-                } else {
-                    await addDoc(BUSINESSES_COLLECTION, businessData);
-                    alertMessage('Business added successfully!', 'success');
-                }
-                hideModal();
-            } catch (error) {
-                console.error("Error saving business: ", error);
-                let errorMessage = error.message.includes('Firebase: ') ? error.message.split('Firebase: ')[1] : error.message;
-                alertMessage(`Failed to save: ${errorMessage}`, 'error');
-            }
-            hideLoading();
-        });
+            container.appendChild(alert);
 
-        window.updateBusinessStatus = async (id, newStatus) => {
-            showLoading("Updating status...");
-            try {
-                const businessRef = doc(BUSINESSES_COLLECTION, id);
-                await updateDoc(businessRef, { status: newStatus });
-                alertMessage(`Business status set to ${newStatus}.`, 'success');
-            } catch (error) {
-                console.error(`Error updating status to ${newStatus}: `, error);
-                alertMessage(`Failed to update status to ${newStatus}.`, 'error');
-            }
-            hideLoading();
-        };
-
-        // --- 7. Custom Alert Message ---
-
-        const ALERT_TIMEOUT = 4000;
-        let alertTimeoutId;
-
-        function alertMessage(message, type) {
-            const container = document.getElementById('custom-alert-container');
-            const id = `alert-${Date.now()}`;
+            // Fade in
+            setTimeout(() => alert.style.opacity = 1, 10);
             
-            let bgColor = 'bg-blue-600'; // default (info)
-            if (type === 'success') bgColor = 'bg-green-600';
-            else if (type === 'error') bgColor = 'bg-red-600';
-
-            const alertBox = document.createElement('div');
-            alertBox.id = id;
-            alertBox.className = `p-4 rounded-lg shadow-lg text-white font-semibold transition-all duration-300 opacity-0 transform translate-x-10 ${bgColor} mb-2`;
-            alertBox.textContent = message;
-            
-            container.appendChild(alertBox);
-
-            // Animate in
+            // Fade out and remove after 3 seconds
             setTimeout(() => {
-                alertBox.classList.remove('opacity-0', 'translate-x-10');
-                alertBox.classList.add('opacity-100', 'translate-x-0');
-            }, 10); // 10ms delay to allow attachment to DOM
-
-            // Animate out and remove
-            setTimeout(() => {
-                alertBox.classList.remove('opacity-100', 'translate-x-0');
-                alertBox.classList.add('opacity-0', 'translate-x-10');
-                alertBox.addEventListener('transitionend', () => {
-                    alertBox.remove();
-                });
-            }, ALERT_TIMEOUT);
+                alert.style.opacity = 0;
+                setTimeout(() => alert.remove(), 300);
+            }, 3000);
         }
+        
+        // --- MENU TOGGLE ---
+        menuButton.addEventListener('click', () => {
+            const isExpanded = userMenuDropdown.classList.contains('hidden');
+            if (isExpanded) {
+                userMenuDropdown.classList.remove('hidden');
+                menuButton.setAttribute('aria-expanded', 'true');
+            } else {
+                userMenuDropdown.classList.add('hidden');
+                menuButton.setAttribute('aria-expanded', 'false');
+            }
+        });
+        document.addEventListener('click', (event) => {
+            if (!menuButton.contains(event.target) && !userMenuDropdown.contains(event.target)) {
+                userMenuDropdown.classList.add('hidden');
+                menuButton.setAttribute('aria-expanded', 'false');
+            }
+        });
+        themeToggleBtn.addEventListener('click', toggleTheme); 
 
     </script>
 </body>
