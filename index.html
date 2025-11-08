@@ -118,7 +118,7 @@
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            <span id="loading-message" class="mt-3 text-white text-lg">Connecting to Firebase...</span>
+            <span id="loading-message" class="mt-3 text-white text-lg">Connecting to Google Sheet API...</span>
         </div>
     </div>
     <div id="login-view" class="view hidden min-h-screen flex items-center justify-center p-4">
@@ -292,8 +292,8 @@
     </div>
     <script type="text/javascript">
         // --- 1. CONFIGURATION & INITIALIZATION ---
-        // !!! GOOGLE APPS SCRIPT API URL FOR DATA COMMUNICATION !!!
-        const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbwBJheYkpzSv0rCxm60k3-Q5GMbWKkwybwi2LPvgJRNE5TWkO8qrL76e_ykeVY-_lzfew/exec'; 
+        // !!! GOOGLE APPS SCRIPT API URL FOR DATA COMMUNICATION - UPDATED !!!
+        const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbwBJheYkpzSv0rCxm60k3-Q5GMbWKkwybwi2LPvgJRNE5TWtOpqrL76e_ykeVY-_lzfew/exec'; 
 
         let userId = 'google-sheet-user'; // Mock user ID since we skip Firebase Auth
         let chartInstance = null;
